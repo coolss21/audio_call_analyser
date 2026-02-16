@@ -34,9 +34,8 @@ ENV/
 ehthumbs.db
 Thumbs.db
 
-# Models (optional to ignore if they are too large, but user wants same code as HF)
-# deepfake_model_multilingual.pt
+# Old files (Refactored)
+deepfake_detector.py
 
-# Sensitive info
+# Secrets
 .env
-secret_key.txt

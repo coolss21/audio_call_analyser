@@ -11,7 +11,7 @@ A high-performance, multilingual voice deepfake detection API built for real-tim
 - **Multilingual Support**: Optimized for English, Hindi, Tamil, Telugu, and Malayalam.
 - **Advanced Fusion Model**: Combines multiple feature extraction techniques:
   - **Mel-spectrogram**: Captures frequency-domain patterns.
-  - **SSL Embeddings**: Leverages `Wav2Vec2` for deep contextual representations.
+  - **SSL Embeddings**: Leverages `Wav2Vec2` (facebook/wav2vec2-base) for deep contextual representations.
   - **Acoustic Features**: Monitors Zero Crossing Rate, RMS energy, and Spectral Flatness.
 - **Fast Inference**: Optimized for CPU execution, suitable for free-tier deployments like Hugging Face Spaces.
 - **Simple API**: Easy-to-integrate REST API with JSON request/response formats.
@@ -55,7 +55,7 @@ A high-performance, multilingual voice deepfake detection API built for real-tim
    docker run -p 5000:5000 audio-call-analyser
    ```
 
-## 🔌 API Usage
+## 🔌 API Usage (Hackathon Evaluation Format)
 
 ### Detection Endpoint
 
@@ -87,6 +87,16 @@ A high-performance, multilingual voice deepfake detection API built for real-tim
 }
 ```
 
+## 🧠 Model Architecture & Approach
+
+The project uses a **Fusion-based Deep Learning approach**:
+1. **Frontend**: Extracts three types of descriptors:
+   - **Time-frequency features**: Mel-spectrograms (128 mels).
+   - **Self-Supervised Learning (SSL)**: Embeddings from `wav2vec2-base` (768-dim).
+   - **Acoustic Features**: Spectral flatness, RMS energy, and zero-crossing rate.
+2. **Backbone**: A multi-path encoder that processes spectral data via 1D-CNNs and concatenates them with SSL and acoustic vectors.
+3. **Head**: A dense classification layer with Dropout for robust inference.
+
 ## 📁 Project Structure
 
 ```text
@@ -102,8 +112,13 @@ A high-performance, multilingual voice deepfake detection API built for real-tim
 
 ## 🧪 Testing
 
-You can use the provided `test_api.py` (in the parent directory) to verify your installation. Ensure the `API_URL` and `API_KEY` match your local or deployed environment.
+You can use the provided `test_api.py` script to evaluate your deployment against the hackathon criteria.
+
+```bash
+python test_api.py
+```
 
 ---
 
-Built with ❤️ for the Audio Analysis Community.
+Built for the **AI Voice Detection Hackathon**.
+
