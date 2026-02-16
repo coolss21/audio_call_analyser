@@ -1,0 +1,8 @@
+flask
+torch
+transformers[torch]
+librosa
+soundfile
+numpy
+gunicorn
+werkzeug
