@@ -1,84 +1,115 @@
-# Audio Call Analyser - Multilingual Voice Deepfake Detector
+<div align="center">
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
-[![Flask](https://img.shields.io/badge/Flask-3.0+-green.svg)](https://flask.palletsprojects.com/)
+# 🎙️ Audio Call Analyser — Multilingual Voice Deepfake Detector
 
-A high-performance, multilingual voice deepfake detection API built for real-time audio analysis. This system classifies audio as either `HUMAN` or `AI_GENERATED` using a fusion model that combines Mel-spectrogram analysis, SSL embeddings (Wav2Vec 2.0), and acoustic feature extraction.
+**Real-time AI-powered voice authenticity verification using a fusion deep learning architecture**
 
-## 🚀 Features
+[![CI](https://github.com/coolss21/audio_call_analyser/actions/workflows/ci.yml/badge.svg)](https://github.com/coolss21/audio_call_analyser/actions)
+[![Python 3.9+](https://img.shields.io/badge/Python-3.9+-3776AB.svg?logo=python&logoColor=white)](https://python.org)
+[![Flask](https://img.shields.io/badge/Flask-3.0+-000000.svg?logo=flask)](https://flask.palletsprojects.com/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C.svg?logo=pytorch&logoColor=white)](https://pytorch.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg?logo=docker&logoColor=white)](#-docker-setup)
 
-- **Multilingual Support**: Optimized for English, Hindi, Tamil, Telugu, and Malayalam.
-- **Advanced Fusion Model**: Combines multiple feature extraction techniques:
-  - **Mel-spectrogram**: Captures frequency-domain patterns.
-  - **SSL Embeddings**: Leverages `Wav2Vec2` (facebook/wav2vec2-base) for deep contextual representations.
-  - **Acoustic Features**: Monitors Zero Crossing Rate, RMS energy, and Spectral Flatness.
-- **Fast Inference**: Optimized for CPU execution, suitable for free-tier deployments like Hugging Face Spaces.
-- **Simple API**: Easy-to-integrate REST API with JSON request/response formats.
+</div>
 
-## 🛠️ Installation & Setup
+---
+
+## 📌 Problem Statement
+
+With the rise of AI-generated voice clones and deepfake audio, phone scams are becoming increasingly sophisticated. Traditional fraud detection systems fail to distinguish between genuine human voices and synthetic speech. **Audio Call Analyser** addresses this by providing a production-ready API that classifies audio as `HUMAN` or `AI_GENERATED` with high confidence across multiple languages.
+
+---
+
+## 🧠 Model Architecture
+
+The system uses a **Multi-Path Fusion Architecture** that combines three complementary feature extraction pipelines for robust detection:
+
+```mermaid
+graph LR
+    A[Raw Audio Input] --> B[Preprocessing<br/>Resampling + Normalization]
+    B --> C1[Mel-Spectrogram<br/>128 Mels]
+    B --> C2[Wav2Vec 2.0<br/>SSL Embeddings]
+    B --> C3[Acoustic Features<br/>ZCR + RMS + Flatness]
+    C1 --> D[1D-CNN Encoder]
+    C2 --> E[768-dim Vector]
+    C3 --> F[Feature Vector]
+    D --> G[Concatenation Layer]
+    E --> G
+    F --> G
+    G --> H[Dense + Dropout]
+    H --> I{HUMAN or<br/>AI_GENERATED}
+```
+
+| Pipeline | Technique | Output |
+|----------|-----------|--------|
+| **Time-Frequency** | Mel-spectrogram (128 mels) | Frequency-domain patterns |
+| **Self-Supervised** | `facebook/wav2vec2-base` embeddings | 768-dim contextual representations |
+| **Acoustic** | ZCR, RMS Energy, Spectral Flatness | Low-level signal characteristics |
+
+---
+
+## ✨ Key Features
+
+- 🌐 **Multilingual Support** — English, Hindi, Tamil, Telugu, Malayalam
+- 🧬 **Fusion Model** — Combines spectral, SSL, and acoustic pipelines for higher accuracy
+- ⚡ **CPU-Optimized** — No GPU required; runs on free-tier cloud instances
+- 🐳 **Docker Ready** — One-command deployment with containerization
+- 🔌 **REST API** — Simple JSON-based request/response for easy integration
+- 🔒 **API Key Auth** — Built-in `x-api-key` header authentication
+
+---
+
+## 🚀 Quick Start
 
 ### Local Setup
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/coolss21/audio_call_analyser.git
-   cd audio_call_analyser
-   ```
+```bash
+# 1. Clone the repository
+git clone https://github.com/coolss21/audio_call_analyser.git
+cd audio_call_analyser
 
-2. **Create a virtual environment**:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
+# 2. Create virtual environment
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
 
-3. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
+# 3. Install dependencies
+pip install -r requirements.txt
 
-4. **Run the API server**:
-   ```bash
-   python app.py
-   ```
-   The server will start on `http://localhost:5000`.
-
-### Docker Setup
-
-1. **Build the image**:
-   ```bash
-   docker build -t audio-call-analyser .
-   ```
-
-2. **Run the container**:
-   ```bash
-   docker run -p 5000:5000 audio-call-analyser
-   ```
-
-## 🔌 API Usage (Hackathon Evaluation Format)
-
-### Detection Endpoint
-
-`POST /detect` or `POST /api/voice-detection`
-
-**Headers:**
-```json
-{
-  "Content-Type": "application/json",
-  "x-api-key": "secret123"
-}
+# 4. Start the API server
+python app.py
+# Server starts at http://localhost:5000
 ```
 
-**Request Body:**
+### 🐳 Docker Setup
+
+```bash
+docker build -t audio-call-analyser .
+docker run -p 5000:5000 audio-call-analyser
+```
+
+---
+
+## 🔌 API Reference
+
+### `POST /detect` or `POST /api/voice-detection`
+
+**Headers:**
+```
+Content-Type: application/json
+x-api-key: secret123
+```
+
+**Request:**
 ```json
 {
   "language": "English",
   "audioFormat": "mp3",
-  "audioBase64": "<base64_encoded_mp3_data>"
+  "audioBase64": "<base64_encoded_audio>"
 }
 ```
 
-**Response Format:**
+**Response:**
 ```json
 {
   "status": "success",
@@ -87,38 +118,59 @@ A high-performance, multilingual voice deepfake detection API built for real-tim
 }
 ```
 
-## 🧠 Model Architecture & Approach
+### `GET /health`
 
-The project uses a **Fusion-based Deep Learning approach**:
-1. **Frontend**: Extracts three types of descriptors:
-   - **Time-frequency features**: Mel-spectrograms (128 mels).
-   - **Self-Supervised Learning (SSL)**: Embeddings from `wav2vec2-base` (768-dim).
-   - **Acoustic Features**: Spectral flatness, RMS energy, and zero-crossing rate.
-2. **Backbone**: A multi-path encoder that processes spectral data via 1D-CNNs and concatenates them with SSL and acoustic vectors.
-3. **Head**: A dense classification layer with Dropout for robust inference.
+Returns API health status and model readiness.
 
-## 📁 Project Structure
+---
 
-```text
-.
-├── app.py                   # Flask API implementation
-├── deepfake_detector.py      # Core detection logic and Fusion Model
-├── deepfake_model_multilingual.pt # Trained model weights
-├── requirements.txt         # Python dependencies
-├── Dockerfile               # Containerization configuration
-├── LICENSE                  # MIT License
-└── README.md                # Project documentation
+## 📂 Project Structure
+
 ```
+audio_call_analyser/
+├── app.py                          # Flask REST API server
+├── deepfake_detector.py            # Core fusion model & inference logic
+├── deepfake_model_multilingual.pt  # Pre-trained model weights
+├── src/
+│   ├── config.py                   # Model & API configuration
+│   ├── detector.py                 # Detection pipeline orchestrator
+│   ├── models/                     # Model architecture definitions
+│   └── processors/                 # Audio preprocessing utilities
+├── requirements.txt                # Python dependencies
+├── Dockerfile                      # Container configuration
+├── .github/workflows/ci.yml       # Automated CI pipeline
+└── LICENSE                         # MIT License
+```
+
+---
 
 ## 🧪 Testing
 
-You can use the provided `test_api.py` script to evaluate your deployment against the hackathon criteria.
-
 ```bash
+# Run syntax & import validation
+python -m py_compile app.py
+python -m py_compile deepfake_detector.py
+
+# Run the test client (if available)
 python test_api.py
 ```
 
 ---
 
-Built for the **AI Voice Detection Hackathon**.
+## 🛡️ Security Considerations
 
+- API key authentication via `x-api-key` header
+- Audio data processed in-memory (no disk persistence)
+- Base64 input validation to prevent injection attacks
+- Rate limiting recommended for production deployments
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).
+
+<div align="center">
+  <br/>
+  <p><i>Built for the AI Voice Detection Hackathon — Defending authenticity in the age of synthetic media.</i></p>
+</div>
